@@ -3,21 +3,21 @@
 #
 #Variables:
 #	
-#	%eax - address of the current item in memory
+#   %eax - address of the current item in memory
 #   %ebx - current minimum value item in list
 #   %ecx - value of current item in memory
 #   %edx - address of end of list
 #	
-#	data_items - Holds the list of items, a zero terminates the list
+#   data_items - Holds the list of items, a zero terminates the list
 
 .section .data
 
 data_items:
 
-	.long 67, 255, 34, 222, 45, 75, 54, 34, 44, 33, 22, 11, 66, 255
+    .long 67, 255, 34, 222, 45, 75, 54, 34, 44, 33, 22, 11, 66, 255
 
-	#The wordsize of a long is 4 bytes. 
-	#Alternatively there are .byte (1 byte), .int (2 bytes), and .ascii (1byte/char with a "\0" terminated string)
+    #The wordsize of a long is 4 bytes. 
+    #Alternatively there are .byte (1 byte), .int (2 bytes), and .ascii (1byte/char with a "\0" terminated string)
 
 data_end:
 
@@ -41,22 +41,17 @@ _start:
 
 start_loop:
     
-    cmpl %eax, %edx
+    cmpl %eax, %edx                 #check if we've run out of items
     je loop_exit
     
     addl $4, %eax                   #incrementing the pointer by one word
-    movl (%eax), %ecx
-    cmpl %ebx, %ecx
+    movl (%eax), %ecx               #load the current item's value
+    cmpl %ebx, %ecx                 #check if the item is smaller than the current minimum
     jge start_loop
-    movl %ecx, %ebx
+    movl %ecx, %ebx                 #save as new min if smaller
     jmp start_loop
 
 loop_exit:
-    
-    #%ebx is used for the status code for the system exit call
-    #and it was already used to store the smallest number
 
-    #movl $69, %ebx     #test case to verify %ebx status code is valid
-
-    movl $1, %eax
+    movl $1, %eax                   #terminate the program
     int $0x80
